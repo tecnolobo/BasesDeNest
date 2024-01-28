@@ -6,6 +6,7 @@ import { isValidObjectId, Model } from 'mongoose';
 import { Pokemon } from './entities/pokemon.entity';
 import { json } from 'stream/consumers';
 import { allowedNodeEnvironmentFlags } from 'process';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 
 @Injectable()
@@ -33,8 +34,16 @@ export class PokemonService {
 
   }
 
-  async findAll() {
-    return await this.PokemonModel.find();
+  async findAll({limit=10,offset=0}:PaginationDto) {
+  
+    return await this.PokemonModel.find()
+    .limit(limit)
+    .skip(offset)
+    .sort({ //Ordenamos por la columna no
+      no:1
+    })
+    .select('-__v') //Eliminamos la columna __v 
+    ;
   }
 
   async findOne(term: string) {
