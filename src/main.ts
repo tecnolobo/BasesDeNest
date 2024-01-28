@@ -16,6 +16,6 @@ async function bootstrap() {
       }
     })
   );
-  await app.listen(3000);
+  await app.listen(process.env.PORT); //Usar esta variable ya que la mayoria de sitios usan esta variable para asignarnos un puerto
 }
 bootstrap();
