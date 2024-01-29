@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -15,9 +15,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password:process.env.DB_PASSWORD,
       autoLoadEntities:true, //
       synchronize:true //lo que hace es cuando uno crea un cambio en las entidades, es decir si se add una columna lo sincrozina
-    })
+    }),
+    ProductsModule
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}
