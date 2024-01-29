@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './products/products.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { ProductsModule } from './products/products.module';
       autoLoadEntities:true, //
       synchronize:true //lo que hace es cuando uno crea un cambio en las entidades, es decir si se add una columna lo sincrozina
     }),
-    ProductsModule
+    ProductsModule,
+    CommonModule
   ],
   controllers: [],
   providers: [],
