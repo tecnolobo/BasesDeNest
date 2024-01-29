@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, BadRequestException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { Product } from './entities/product.entity';
 @Injectable()
 export class ProductsService {
 
+  private readonly logger = new Logger('ProductsService'); 
 
   constructor(
     @InjectRepository(Product)
@@ -25,10 +26,8 @@ export class ProductsService {
 
       return producto;
 
-
     } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException(`Ayuda`)
+      this.handleDBException(error);    
     }
 
     return 'This action adds a new product';
@@ -48,5 +47,16 @@ export class ProductsService {
 
   remove(id: number) {
     return `This action removes a #${id} product`;
+  }
+
+  handleDBException(error:any){
+
+    if(error.code==='23505'){
+      throw new BadRequestException(`${error.detail}`);
+    }else{
+      this.logger.error(error);//Se usa parea mostrar lso errores de una forma mas amigable
+      throw new InternalServerErrorException(`Error insesperado validar los logs`)
+
+    }
   }
 }
