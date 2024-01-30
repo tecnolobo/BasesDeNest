@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { PaginationDto } from '../common/dtos/pagination.dto';
+import {validate as IsUuid} from 'uuid';
 
 @Injectable()
 export class ProductsService {
@@ -41,18 +42,36 @@ export class ProductsService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(term: string) {
 
-    const produc = await this.producRepository.findOneBy({id:id});
-    if(!produc){
-      throw new NotFoundException(`El producto ${id} no existe `); 
+    let producto:Product;
+
+    if(IsUuid(term)){
+      producto = await this.producRepository.findOneBy({id:term});
+    }else{
+      producto = await this.producRepository.findOneBy({slug:term});
     }
 
-    return produc;
+    if(!producto){
+      throw new NotFoundException(`El producto ${term} no existe `); 
+    }
+
+    return producto;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: string, updateProductDto: UpdateProductDto) {
+
+    const produc = await this.producRepository.preload({ //Precarga primero el pdocuto buscandolo por id y las demas propiedades
+      //Las a usar para actualizarlos.
+      id:id,
+      ... updateProductDto
+    });
+
+    if (!produc){
+      throw new NotFoundException(`No se encontro el producto ${id}`);
+    }
+
+    return this.producRepository.save(produc); //Se guarda y se retorna
   }
 
   async remove(id: string) {
