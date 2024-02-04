@@ -11,7 +11,9 @@ export class User {
   })
   email:string;
    
-  @Column('text',{})
+  @Column('text',{
+    select:false //De esta forma no traemos nunca la contaseña
+  })
   password:string;
 
   @Column('text',{})

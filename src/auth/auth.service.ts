@@ -1,10 +1,11 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateAuthDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { LoginUserDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,7 @@ export class AuthService {
   }
 
   //para encriptar contraseña usamos el paquete  yarn add bcrypt
-  async create(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto) {
     // return 'This action adds a new auth';
     try {
       const  {password, ...userData} = createUserDto;
@@ -37,6 +38,29 @@ export class AuthService {
     } catch (error) {
       this.handleDBErrors(error);
     }
+  }
+
+
+  //para encriptar contraseña usamos el paquete  yarn add bcrypt
+  async  loginUser(loginUserDto:LoginUserDto) {
+    
+    const {password,email} = loginUserDto;
+
+    const user = await this.userRepository.findOne({
+      where:{email},
+      select:{email:true,password:true} //Trae solo el email y el passwod esto salta la configuracion que le hizimos en la ENTIDAD que no trjera la password
+    });
+
+    if(!user){
+      throw new UnauthorizedException('Validationes incorrectos');
+    }
+
+    if(bcrypt.compareSync(password,user.password) ){
+      throw new UnauthorizedException('Validationes incorrectos pass');
+    }
+    
+    return user;
+
   }
 
 
