@@ -1,0 +1,7 @@
+//instalar 
+yarn add @nestjs/passport passport
+
+//prar trabajr con jwt con nest
+yarn add --save @nestjs/jwt passport-jwt
+//instalamos definiciones de tipo para jwb
+yarn add  @types/passport-jwt -D
